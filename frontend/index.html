@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project & Task Manager</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        a {
+        cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <h1 class="text-center mb-4">Project & Task Manager</h1>
+        <div class="mb-3">
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="offcanvas" data-bs-target="#addProject" aria-controls="addProject">Add Project</button>
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="offcanvas" data-bs-target="#addTask" aria-controls="addTask">Add Task</button>
+        </div>
+        <div class="row">
+            <!-- Daftar Project -->
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Daftar Project</h4>
+                    </div>
+                    <div class="list-group list-group-flush" id="project-list">
+                        <!-- Daftar Project dan Task akan dimuat di sini -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Project -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="addProject" aria-labelledby="addProjectLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="addProjectLabel">Project</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <label for="project-name">Name</label>
+            <input type="text" class="form-control" id="project-name">
+            <div class="d-flex justify-content-between w-100 mt-3">
+                <button class="btn btn-success" type="button" onclick="addProject()">Add</button>
+            </div>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="editProject" aria-labelledby="editProjectLabel">
+        <div class="offcanvas-header">
+            <h5 id="editProjectLabel">Edit Project</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <input type="hidden" id="project-id-edit">
+            <div class="mb-3">
+                <label for="project-name-edit" class="form-label">Project Name</label>
+                <input type="text" class="form-control" id="project-name-edit">
+            </div>
+            <div class="mb-3">
+                <label for="project-status-edit" class="form-label">Status</label>
+                <input class="form-control" id="project-status-edit" disabled>
+            </div>
+            <div class="mb-3">
+                <label for="project-persen-edit" class="form-label">Completion Progress (%)</label>
+                <input type="text" class="form-control" id="project-persen-edit" disabled>
+            </div>
+            <div class="d-flex justify-content-between w-100 mt-3">
+                <button type="button" class="btn btn-danger" id="deleteProjectBtn">Delete</button>
+                <button type="button" class="btn btn-primary" id="saveProjectBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="addTask" aria-labelledby="addTaskLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="addTaskLabel">Task</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <label for="task-name">Name</label>
+            <input type="text" class="form-control" id="task-name">
+            <label for="task-status">Status</label>
+            <select class="form-select" id="task-status" aria-label="Default select example">
+                <option selected>Choose Status</option>
+                <option value="draft">Draft</option>
+                <option value="in_progress">In Progress</option>
+                <option value="done">Done</option>
+            </select>
+            <label for="task-project">Project</label>
+            <select class="form-select" id="task-project" aria-label="Default select example">
+                <option selected>Choose Project</option>
+            </select>
+            <label for="task-bobot">Bobot</label>
+            <input type="number" class="form-control" id="task-bobot">
+            <div class="d-flex justify-content-between w-100 mt-3">
+                <button class="btn btn-success" type="button" onclick="addTask()">Add</button>
+            </div>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="editTask" aria-labelledby="editTaskLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="editTaskLabel">Edit Task</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <label for="task-name">Name</label>
+            <input type="text" class="form-control mb-3" id="task-name-edit">
+            <input type="hidden" class="form-control mb-3" id="task-id-edit">
+    
+            <label for="task-status">Status</label>
+            <select class="form-select mb-3" id="task-status-edit">
+                <option value="draft">Draft</option>
+                <option value="in_progress">In Progress</option>
+                <option value="done">Done</option>
+            </select>
+    
+            <label for="task-project">Project</label>
+            <select class="form-select mb-3" id="task-project-edit">
+                <!-- Dynamically populated -->
+            </select>
+    
+            <label for="task-bobot">Bobot</label>
+            <input type="number" class="form-control" id="task-bobot-edit">
+    
+            <div class="d-flex justify-content-between w-100 mt-3">
+                <button class="btn btn-danger" type="button" id="deleteTaskBtn">Delete</button>
+                <button class="btn btn-success" type="button" id="saveTaskBtn">Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasRightLabel">Offcanvas right</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            ...
+        </div>
+    </div>
+    <!-- Bootstrap JS & Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // AJAX request untuk mendapatkan daftar project
+        function loadProjects() {
+            fetch('http://localhost/Project_Tracker/backend/routes/api.php?action=get_projects_task')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Response from backend:', data);
+                    
+                    if (Array.isArray(data) && data.length > 0) {
+                        const projectList = document.getElementById('project-list');
+                        projectList.innerHTML = '';
+
+                        // Kelompokkan tugas berdasarkan project_id
+                        const tasksByProject = {};
+
+                        // Mengelompokkan tugas berdasarkan project_id
+                        data.forEach(item => {
+                            if (item.project_id) {
+                                if (!tasksByProject[item.project_id]) {
+                                    tasksByProject[item.project_id] = [];
+                                }
+                                tasksByProject[item.project_id].push(item);
+                            }
+                        });
+
+                        // Menampilkan semua proyek
+                        const projectIds = new Set();
+                        
+                        // Menampilkan semua proyek dan tugas terkait
+                        data.forEach(project => {
+                            
+                            if (projectIds.has(project.id)) {
+                                // Jika proyek sudah diproses, lanjutkan ke proyek berikutnya
+                                return;
+                            }
+                            // Pastikan proyek ditampilkan meskipun tidak ada tugas terkait
+                            const projectItem = document.createElement('li');
+                            projectItem.classList.add('list-group-item');
+
+                            // Ambil tugas untuk proyek ini
+                            const tasks = tasksByProject[project.project_id] || []; // Dapatkan tugas dari kelompok yang sesuai
+                            
+                            const tasksHtml = tasks.length > 0 
+                                ? tasks.map(task => `<a onclick="openEditTaskModal(${task.task_id})">${task.task_name}</a><br>`).join('')
+                                : '<p>No tasks available</p>';
+
+                            projectItem.innerHTML = `
+                                <a data-bs-toggle="offcanvas" data-bs-target="#editProject" aria-controls="editProject" onclick="openEditProjectsModal(${project.id})">${project.project_name}</a>
+                                <ul>
+                                    ${tasksHtml}
+                                </ul>
+                                <hr>
+                            `;
+                            projectList.appendChild(projectItem);
+                            
+                            // Menambahkan proyek yang sudah diproses ke dalam set projectIds
+                            projectIds.add(project.project_id);
+                        });
+
+                        // Menampilkan proyek tanpa tugas jika ada
+                        // Menghindari duplikasi proyek yang sudah diproses
+                        data.forEach(project => {
+                            if (!projectIds.has(project.project_id)) {
+                                const projectItem = document.createElement('li');
+                                projectItem.classList.add('list-group-item');
+                                
+                                const tasksHtml = '<p>No tasks available</p>';
+                                projectItem.innerHTML = `
+                                    <a data-bs-toggle="offcanvas" data-bs-target="#editProject" aria-controls="editProject" onclick="openEditProjectsModal(${project.id})">${project.project_name}</a>
+                                    <ul>
+                                        ${tasksHtml}
+                                    </ul>
+                                    <hr>
+                                `;
+                                projectList.appendChild(projectItem);
+                            }
+                        });
+                    } else {
+                        console.error('No projects found or data format is incorrect');
+                    }
+                })
+                .catch(error => console.error('Error loading projects:', error));
+        }
+
+        // Fungsi untuk menambahkan project
+        function addProject() {
+            const name = document.getElementById('project-name').value;
+
+            // Memastikan nama tidak kosong sebelum mengirimkan request
+            if (!name) {
+                alert('Please enter a project name!');
+                return; // Hentikan eksekusi jika nama kosong
+            }
+
+            // Mengirimkan permintaan POST ke backend
+            fetch('http://localhost/Project_Tracker/backend/routes/api.php?action=add_project', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name })
+            })
+            .then(response => response.json()) // Memastikan bahwa server mengirimkan response JSON
+            .then(data => {
+                alert('Project added successfully!');
+                loadProjects(); // Reload daftar project setelah menambah
+
+                // Menutup offcanvas setelah berhasil menambahkan project
+                const offcanvasElement = document.getElementById('addProject');
+                const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement); // Mendapatkan instance offcanvas yang sudah ada
+                if (offcanvas) {
+                    offcanvas.hide(); // Menutup offcanvas
+                } else {
+                    // Jika instance offcanvas belum ada, buat dan tampilkan
+                    new bootstrap.Offcanvas(offcanvasElement).hide();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Fungsi untuk menambahkan task
+        function addTask() {
+            const name = document.getElementById('task-name').value;
+            const status = document.getElementById('task-status').value;
+            const project_id = document.getElementById('task-project').value;
+            const bobot = document.getElementById('task-bobot').value;
+            // Validasi data sebelum mengirimkan request
+            if (!name || !status || !project_id || !bobot) {
+                alert('Please fill in all fields!');
+                return; // Hentikan eksekusi jika ada data yang kosong
+            }
+
+            // Mengirimkan permintaan POST ke backend
+            fetch('http://localhost/Project_Tracker/backend/routes/api.php?action=add_task', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name,
+                    status,
+                    project_id,
+                    bobot
+                })
+            })
+            .then(response => response.json()) // Memastikan bahwa server mengirimkan response JSON
+            .then(data => {
+                if (data.error) {
+                    alert(data.error); // Menampilkan error jika ada
+                } else {
+                    alert('Task added successfully!');
+                    loadProjects(); 
+                    const offcanvasElement = document.getElementById('addTask');
+                const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement); // Mendapatkan instance offcanvas yang sudah ada
+                if (offcanvas) {
+                    offcanvas.hide(); // Menutup offcanvas
+                } else {
+                    // Jika instance offcanvas belum ada, buat dan tampilkan
+                    new bootstrap.Offcanvas(offcanvasElement).hide();
+                }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding the task.');
+            });
+        }
+
+        // Memuat project untuk dipilih dalam task
+        function loadProjectsForTask() {
+            fetch('http://localhost/Project_Tracker/backend/routes/api.php?action=get_projects')
+                .then(response => response.json())
+                .then(data => {
+                    const projectSelect = document.getElementById('task-project');
+                    projectSelect.innerHTML = '<option selected>Choose Project</option>';
+                    
+                    // Check if 'data' is an array and has content
+                    if (Array.isArray(data) && data.length > 0) {
+                        data.forEach(project => {
+                            const option = document.createElement('option');
+                            option.value = project.id;
+                            option.textContent = project.name;
+                            projectSelect.appendChild(option);
+                        });
+                    } else {
+                        console.error('No projects found or data format is incorrect');
+                    }
+                })
+                .catch(error => console.error('Error loading projects:', error));
+        }
+
+        // Fungsi untuk mengambil data task berdasarkan ID
+        function fetchTaskData(taskId) {
+            fetch(`http://localhost/Project_Tracker/backend/routes/api.php?action=get_task&id=${taskId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        document.getElementById('task-id-edit').value = data.id;
+                        document.getElementById('task-name-edit').value = data.name;
+                        document.getElementById('task-status-edit').value = data.status;
+                        document.getElementById('task-bobot-edit').value = data.bobot;
+                        document.getElementById('task-project-edit').value = data.project_id;
+                        // Lakukan pengisian select project jika perlu
+                    } else {
+                        alert('Task not found');
+                    }
+                })
+                .catch(error => console.error('Error fetching task data:', error));
+        }
+
+        // Menampilkan modal edit task
+        function openEditTaskModal(taskId) {
+            fetchTaskData(taskId);
+            const editModal = new bootstrap.Offcanvas(document.getElementById('editTask'));
+            editModal.show();
+        }
+
+        // Fungsi untuk mengambil data task berdasarkan ID
+        function fetchProjectsData(projectsId) {
+            fetch(`http://localhost/Project_Tracker/backend/routes/api.php?action=get_project&id=${projectsId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        document.getElementById('project-id-edit').value = data.id;
+                        document.getElementById('project-name-edit').value = data.name;
+
+                        // Pastikan data.completion_progress adalah angka dan format ke 1 desimal
+                        const completionProgress = parseFloat(data.completion_progress);
+                        if (!isNaN(completionProgress)) {
+                            document.getElementById('project-persen-edit').value = Math.floor(completionProgress * 10) / 10 + '%';
+                        } else {
+                            document.getElementById('project-persen-edit').value = '0%'; // Jika tidak valid, set ke 0%
+                        }
+
+                        document.getElementById('project-status-edit').value = data.status;
+                        // Lakukan pengisian select project jika perlu
+                    } else {
+                        alert('Project not found');
+                    }
+                })
+                .catch(error => console.error('Error fetching project data:', error));
+        }
+
+        // Menampilkan modal edit projects
+        function openEditProjectsModal(projectId) {
+            fetchProjectsData(projectId);
+            const editModal = new bootstrap.Offcanvas(document.getElementById('editProject'));
+            editModal.show();
+        }
+
+        // Event listener for "Save" button for updating project
+        document.getElementById('saveProjectBtn').addEventListener('click', function() {
+            const projectId = document.getElementById('project-id-edit').value;
+            const projectName = document.getElementById('project-name-edit').value;
+
+            // Send update request for the project
+            fetch(`http://localhost/Project_Tracker/backend/routes/api.php?action=update_project&id=${projectId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: projectName,
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                alert('Project updated successfully');
+
+                // Close the modal
+                const editModal = bootstrap.Offcanvas.getInstance(document.getElementById('editProject'));
+                editModal.hide();
+
+                // Reload the projects list
+                loadProjects();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(`Failed to update project: ${error.message}`);
+            });
+        });
+
+        // Event listener for "Delete" button for deleting project
+        document.getElementById('deleteProjectBtn').addEventListener('click', function() {
+            const projectId = document.getElementById('project-id-edit').value; // Get the projectId being edited
+
+            fetch(`http://localhost/Project_Tracker/backend/routes/api.php?action=delete_project&id=${projectId}&_method=DELETE`, {
+                method: 'POST', // Use POST method with _method=DELETE
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Project deleted successfully');
+                const editModal = bootstrap.Offcanvas.getInstance(document.getElementById('editProject'));
+                editModal.hide();
+                loadProjects(); // Refresh the project list
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(`Failed to delete project: ${error.message}`);
+            });
+        });
+
+
+
+        // Event listener untuk tombol "Save"
+        document.getElementById('saveTaskBtn').addEventListener('click', function() {
+            const taskId = document.getElementById('task-id-edit').value;
+            const name = document.getElementById('task-name-edit').value;
+            const status = document.getElementById('task-status-edit').value;
+            const project_id = document.getElementById('task-project-edit').value;
+            const bobot = document.getElementById('task-bobot-edit').value;
+
+            // Kirim data ke backend untuk update task
+            fetch(`http://localhost/Project_Tracker/backend/routes/api.php?action=update_task&id=${taskId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name,
+                    status: status,
+                    project_id: project_id,
+                    bobot: bobot
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                alert('Task updated successfully');
+
+                // Panggil API untuk update status proyek
+                return fetch('http://localhost/Project_Tracker/backend/routes/api.php?action=update_project_status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        project_id: Number(project_id)
+                    })
+                });
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                alert('Project status updated successfully');
+
+                // Tutup modal
+                const editModal = bootstrap.Offcanvas.getInstance(document.getElementById('editTask'));
+                editModal.hide();
+
+                // Refresh data proyek atau tugas
+                loadProjects();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(`Failed to update: ${error.message}`);
+            });
+        });
+
+
+        function loadProjectsForEdit(project_id) {
+            fetch('http://localhost/Project_Tracker/backend/routes/api.php?action=get_projects')
+                .then(response => response.json())
+                .then(data => {
+                    const projectSelect = document.getElementById('task-project-edit');
+                    projectSelect.innerHTML = '<option selected>Choose Project</option>';
+                    
+                    if (Array.isArray(data) && data.length > 0) {
+                        data.forEach(project => {
+                            const option = document.createElement('option');
+                            option.value = project.id;
+                            option.textContent = project.name;
+                            if (project.id == project_id) {
+                                option.selected = true; // Tandai project yang dipilih
+                            }
+                            projectSelect.appendChild(option);
+                        });
+                    } else {
+                        console.error('No projects found or data format is incorrect');
+                    }
+                })
+                .catch(error => console.error('Error loading projects:', error));
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProjectsForEdit(); // Jika ingin memuat proyek langsung saat halaman siap
+        });
+
+        // Event listener untuk tombol "Delete"
+        document.getElementById('deleteTaskBtn').addEventListener('click', function() {
+            const taskId = document.getElementById('task-id-edit').value;  // Ambil taskId yang sedang diedit
+
+            fetch(`http://localhost/Project_Tracker/backend/routes/api.php?action=delete_task&id=${taskId}&_method=DELETE`, {
+                method: 'POST', // Menggunakan POST tetapi dengan _method=DELETE
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Task deleted successfully');
+                const editModal = bootstrap.Offcanvas.getInstance(document.getElementById('editTask'));
+                editModal.hide();
+                loadProjects();
+            })
+            .catch(error => {
+                console.error('Error deleting task:', error);
+                alert('Failed to delete task');
+            });
+        });
+
+
+
+        // Memuat daftar project saat halaman dimuat
+        window.onload = function() {
+            loadProjects();
+            loadProjectsForTask();
+        };
+    </script>
+</body>
+</html>
